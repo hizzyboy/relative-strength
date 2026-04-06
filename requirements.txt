@@ -1,8 +1,8 @@
 requests
 numpy
-pandas
+pandas==2.2.0
 scipy
-pandas_datareader
+pandas_datareader==0.10.0
 beautifulsoup4
 PyYAML
 yfinance==0.1.63
