@@ -5,5 +5,5 @@ scipy
 pandas_datareader==0.10.0
 beautifulsoup4
 PyYAML
-yfinance==0.1.63
+yfinance
 multitasking==0.0.11
