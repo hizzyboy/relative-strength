@@ -255,26 +255,29 @@ def get_yf_data(security, start_date, end_date):
         ticker_data = {}
         ticker = security["ticker"]
         escaped_ticker = escape_ticker(ticker)
-        df = yf.download(escaped_ticker, start=start_date, end=end_date, auto_adjust=True)
-        yahoo_response = df.to_dict()
-        timestamps = list(yahoo_response["Open"].keys())
-        timestamps = list(map(lambda timestamp: int(timestamp.timestamp()), timestamps))
-        opens = list(yahoo_response["Open"].values())
-        closes = list(yahoo_response["Close"].values())
-        lows = list(yahoo_response["Low"].values())
-        highs = list(yahoo_response["High"].values())
-        volumes = list(yahoo_response["Volume"].values())
+        df = yf.download(escaped_ticker, start=start_date, end=end_date, auto_adjust=True, progress=False)
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
         candles = []
+        if not df.empty:
+            yahoo_response = df.to_dict()
+            timestamps = list(yahoo_response["Open"].keys())
+            timestamps = list(map(lambda timestamp: int(timestamp.timestamp()), timestamps))
+            opens = list(yahoo_response["Open"].values())
+            closes = list(yahoo_response["Close"].values())
+            lows = list(yahoo_response["Low"].values())
+            highs = list(yahoo_response["High"].values())
+            volumes = list(yahoo_response["Volume"].values())
 
-        for i in range(0, len(opens)):
-            candle = {}
-            candle["open"] = opens[i]
-            candle["close"] = closes[i]
-            candle["low"] = lows[i]
-            candle["high"] = highs[i]
-            candle["volume"] = volumes[i]
-            candle["datetime"] = timestamps[i]
-            candles.append(candle)
+            for i in range(0, len(opens)):
+                candle = {}
+                candle["open"] = opens[i]
+                candle["close"] = closes[i]
+                candle["low"] = lows[i]
+                candle["high"] = highs[i]
+                candle["volume"] = volumes[i]
+                candle["datetime"] = timestamps[i]
+                candles.append(candle)
 
         ticker_data["candles"] = candles
         enrich_ticker_data(ticker_data, security)
